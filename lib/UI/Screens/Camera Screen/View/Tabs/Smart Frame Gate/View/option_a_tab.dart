@@ -9,13 +9,13 @@ import '../../../../View Model/camera_screen_view_model.dart';
 
 
 class SmartFrameGate extends StatefulWidget {
-  SmartFrameGate({super.key});
+  const SmartFrameGate({super.key});
 
   @override
   State<SmartFrameGate> createState() => _SmartFrameGateState();
 }
 
-class _SmartFrameGateState extends State<SmartFrameGate> implements Connector{
+class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
   late SmartGateViewModel viewModel;
 
   @override
@@ -29,80 +29,87 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector{
   Widget build(BuildContext context) {
     final cameraVM = context.read<CameraScreenViewModel>();
 
-    return ChangeNotifierProvider(
-      create:  (context) => viewModel,
-      child: GestureDetector(
-        onTap: viewModel.filteringStatus == Status.loading
-            ? null
-            : () {
-          if (cameraVM.controller != null) {
-            viewModel.startFiltering(cameraVM.controller!);
-          }
-        },
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.6,
-          height: MediaQuery.of(context).size.height * 0.1,
-          decoration: BoxDecoration(
-            color: viewModel.filteringStatus == Status.loading
-                ? Colors.grey
-                : Colors.deepPurple,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          alignment: Alignment.center,
-          child: viewModel.filteringStatus == Status.loading
-              ? const Row(children: [
-            Text(
-              "Filtering...",
-              style: TextStyle(color: Colors.white, fontSize: 16),
+    return ChangeNotifierProvider.value(
+      value: viewModel,
+      child: Consumer<SmartGateViewModel>(
+        builder: (context, smartGateVM, child) {
+          return GestureDetector(
+            onTap: smartGateVM.filteringStatus == Status.loading
+                ? null
+                : () {
+              if (cameraVM.controller != null) {
+                smartGateVM.startFiltering(cameraVM.controller!);
+              }
+            },
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.6,
+              height: MediaQuery.of(context).size.height * 0.1,
+              decoration: BoxDecoration(
+                color: smartGateVM.filteringStatus == Status.loading
+                    ? Colors.white10
+                    : Colors.deepPurple,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              alignment: Alignment.center,
+              child: smartGateVM.filteringStatus == Status.loading
+                  ? const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Filtering...",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  SizedBox(width: 8),
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ],
+              )
+                  : const Text(
+                "Start Filtering",
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
-            SizedBox(width: 4,),
-            CircularProgressIndicator(color: Colors.white,),
-          ],)
-              : const Text(
-            "Start Filtering",
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
+
   @override
   showError(String msg) {
+    if (!mounted) return;
     showDialog(
       context: context,
-      builder: (_) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Text("Error"),
-          content: Text(msg),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("OK"),
-            )
-          ],
-        );
-      },
+      builder: (_) => AlertDialog(
+        title: const Text("Error"),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          )
+        ],
+      ),
     );
   }
 
-
   @override
   showSuccess() {
+    if (!mounted) return;
     Navigator.pushNamed(
       context,
       Routes.resultScreenRoute,
       arguments: {
         'type': ResultType.frames,
         'frames': viewModel.topFrames,
-        // 'scan': myScanData,
-        // 'detectionData': myDetectionData,
       },
     );
-
   }
-
 }
 

@@ -14,17 +14,19 @@ class SmartGateViewModel extends ChangeNotifier{
   Status filteringStatus=Status.init;
   String? errorMessage;
    Connector? connector;
-  // void showMetrics(){
-  //   if(topFrames.isNotEmpty){
-  //     for(int i=0;i<topFrames.length;i++){
-  //       print("Frame Score: ${topFrames[i].score}");
-  //       print("Frame Motion: ${topFrames[i].shakeScore}");
-  //       print("Frame Brightness: ${topFrames[i].brightnessScore}");
-  //       print("Frame Sharpness: ${topFrames[i].blurScore}");
-  //     }
-  //   }
-  //   print("Lengthhhh:${topFrames.length}");
-  // }
+
+  void showMetrics(){
+    if(topFrames.isNotEmpty){
+      for(int i=0;i<topFrames.length;i++){
+        print("Frame Score: ${topFrames[i].score}");
+        print("Frame Motion: ${topFrames[i].shakeScore}");
+        print("Frame Brightness: ${topFrames[i].brightnessScore}");
+        print("Frame Sharpness: ${topFrames[i].blurScore}");
+      }
+    }
+    print("Lengthhhh:${topFrames.length}");
+  }
+
   Future<void> startFiltering(CameraController controller) async {
     bool isStreaming = true;
     topFrames = [];
@@ -37,12 +39,10 @@ class SmartGateViewModel extends ChangeNotifier{
 
     try {
       filteringStatus = Status.loading;
+      // print("Status:${filteringStatus}");
       notifyListeners();
 
       controller.startImageStream((image) {
-        print("Motion: ${FrameGateFunctions.calculateMotionNormalized(image, previous)}");
-        print("Brightness: ${FrameGateFunctions.calculateExposureNormalized(image)}");
-        print("Sharpness: ${FrameGateFunctions.calculateSharpnessNormalized(image)}");
         final now = DateTime.now();
 
         if (!isStreaming) return;
@@ -58,8 +58,8 @@ class SmartGateViewModel extends ChangeNotifier{
         if (now.difference(start).inSeconds <= 16) {
           lastProcessedTime = now;
           frameCounter++;
-
           _processingFrame(image, previous);
+
           previous = image;
         } else {
           isStreaming = false;
@@ -68,11 +68,13 @@ class SmartGateViewModel extends ChangeNotifier{
       });
     } catch (e) {
       filteringStatus = Status.error;
+      // print("Status:${filteringStatus}");
       connector?.showError(e.toString());
       errorMessage = e.toString();
       notifyListeners();
     }
   }
+
   void _processingFrame(CameraImage currFrame,CameraImage? prevFrame){
     double sharpness = FrameGateFunctions.calculateSharpnessNormalized(currFrame);
     double exposure = FrameGateFunctions.calculateExposureNormalized(currFrame);
@@ -102,11 +104,9 @@ class SmartGateViewModel extends ChangeNotifier{
 
     if(topFrames.length<_maxFrames) {
       topFrames.add(newFrame);
-      notifyListeners();
     }
     else if(newFrame.score>topFrames.last.score){
       topFrames.last=newFrame;
-      notifyListeners();
     }
     topFrames.sort((a, b) => b.score.compareTo(a.score));
     notifyListeners();
@@ -115,6 +115,7 @@ class SmartGateViewModel extends ChangeNotifier{
   Future<void> _stopStreaming(CameraController controller) async {
     await controller.stopImageStream();
     filteringStatus = Status.success;
+    // print("Status:${filteringStatus}");
     connector?.showSuccess();
     notifyListeners();
     //showMetrics();

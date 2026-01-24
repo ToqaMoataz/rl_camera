@@ -6,9 +6,17 @@ class ScanMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: double.infinity,
-      width: double.infinity,
-      child: Center(child: Text("Scan Mode"),),
+      width: MediaQuery.of(context).size.width * 0.6,
+      height: MediaQuery.of(context).size.height * 0.1,
+      decoration: BoxDecoration(
+        color: Colors.deepPurple,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        "Scan",
+        style: TextStyle(color: Colors.white, fontSize: 16),
+      ),
     );
   }
 }
