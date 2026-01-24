@@ -1,12 +1,17 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../Costants/constants.dart';
+import '../../../../Costants/constants.dart';
 
-class CameraProvider extends ChangeNotifier {
+class CameraScreenViewModel extends ChangeNotifier {
+  late int selectedTab;
   CameraController? controller;
   Status cameraStatus = Status.init;
   String? error;
+
+  CameraScreenViewModel() {
+    selectedTab = 0;
+  }
 
   Future<void> initCamera(List<CameraDescription> cameras) async {
     if (controller != null && controller!.value.isInitialized) {
@@ -46,5 +51,21 @@ class CameraProvider extends ChangeNotifier {
   void dispose() {
     controller?.dispose();
     super.dispose();
+  }
+  void changeTab({required int index}) {
+    selectedTab = index;
+    notifyListeners();
+  }
+
+  void call(){
+    if(selectedTab==0){
+      // Call Filtering frames Function
+      return;
+    }
+    else if(selectedTab==1){
+      // Call Scan Function
+      return;
+    }
+    // Call Detector Function
   }
 }

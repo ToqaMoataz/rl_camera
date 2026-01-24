@@ -2,9 +2,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rl_camera_filters/Providers/camera_provider.dart';
-import 'Providers/tab_management_provider.dart';
+import 'UI/Screens/Camera Screen/View Model/camera_screen_view_model.dart';
 import 'Routes/app_routes.dart';
-import 'Screens/Camera Screen/Screen/camera_screen.dart';
+import 'UI/Screens/Camera Screen/View/Screen/camera_screen.dart';
+import 'UI/Screens/Result Screen/result_screen.dart';
 
 late List<CameraDescription> _cameras;
 
@@ -15,7 +16,7 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => TabManagementProvider()),
+        ChangeNotifierProvider(create: (context) => CameraScreenViewModel()),
         ChangeNotifierProvider(create: (context) => CameraProvider()),
       ],
       child: const MyApp(),
@@ -26,17 +27,34 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          Routes.cameraScreenRoute : (context) => CameraScreen(cameras: _cameras,),
-          //Routes.resultScreenRoute: (context) => ResultScreen(),
-        },
-        initialRoute: Routes.cameraScreenRoute,
+      debugShowCheckedModeBanner: false,
+      initialRoute: Routes.cameraScreenRoute,
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case Routes.cameraScreenRoute:
+            return MaterialPageRoute(
+              builder: (_) => CameraScreen(cameras: _cameras),
+            );
 
+          case Routes.resultScreenRoute:
+            final args = settings.arguments as Map<String, dynamic>;
+            return MaterialPageRoute(
+              builder: (_) => ResultScreen(
+                type: args['type'],
+                frames: args['frames'],
+                scan: args['scan'],
+                detectionData: args['detectionData'],
+              ),
+            );
+
+          default:
+            return null;
+        }
+      },
     );
   }
 }
+
