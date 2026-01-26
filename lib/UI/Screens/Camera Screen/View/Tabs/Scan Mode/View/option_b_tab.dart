@@ -43,7 +43,7 @@ class _ScanModeState extends State<ScanMode> implements Connector {
                 width: MediaQuery.of(context).size.width * 0.6,
                 height: MediaQuery.of(context).size.height * 0.1,
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple,
+                  color: MainColors.getPrimaryColor(),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 alignment: Alignment.center,
@@ -52,7 +52,7 @@ class _ScanModeState extends State<ScanMode> implements Connector {
             );
           }
 
-          return CircularProgressIndicator(color: Colors.deepPurple);
+          return CircularProgressIndicator(color:  MainColors.getPrimaryColor());
         },
       ),
     );

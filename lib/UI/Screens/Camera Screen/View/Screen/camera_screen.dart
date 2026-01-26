@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View%20Model/camera_screen_view_model.dart';
 
+import '../../../../../Core/Colors/main_colors.dart';
 import '../../../../../Core/Costants/constants.dart';
 import '../Tabs/On-Device TFLite Detector/View/option_c_tab.dart';
 import '../Tabs/Scan Mode/View/option_b_tab.dart';
@@ -95,7 +96,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildCamera(CameraScreenViewModel vm) {
     if (vm.cameraStatus == Status.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(color: MainColors.getPrimaryColor(),));
     }
 
     if (vm.cameraStatus == Status.error) {

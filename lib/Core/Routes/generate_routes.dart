@@ -23,7 +23,7 @@ class AppRoutesGenerator {
         return MaterialPageRoute(
           builder: (_) => ResultScreen(
             type: args['type'],
-            frames: args['frames'],
+            frameResult: args['frameResult'],
             scanResult: args['scan'],
             detectionData: args['detectionData'],
           ),

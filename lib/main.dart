@@ -49,14 +49,16 @@ class MyApp extends StatelessWidget {
             color: MainColors.getPrimaryColor(),
           ),
           unselectedIconTheme: IconThemeData(
-            color: MainColors.getGreyColor()
+            color: MainColors.getTextPrimaryColor(),
           ),
           selectedLabelStyle: TextStyle(
             color: MainColors.getPrimaryColor(),
           ),
           unselectedLabelStyle: TextStyle(
-            color: MainColors.getGreyColor(),
-          )
+            color: MainColors.getTextPrimaryColor(),
+          ),
+          unselectedItemColor: MainColors.getTextPrimaryColor(),
+          selectedItemColor: MainColors.getPrimaryColor()
         )
       ),
       initialRoute: Routes.cameraScreenRoute,

@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/Connector/connector.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Smart%20Frame%20Gate/View%20Model/smart_gate_view_model.dart';
 
+import '../../../../../../../Core/Colors/main_colors.dart';
 import '../../../../../../../Core/Costants/constants.dart';
 import '../../../../../../../Core/Routes/app_routes.dart';
+import '../../../../../../../Core/Text Syles/text_styles.dart';
 import '../../../../View Model/camera_screen_view_model.dart';
 
 
@@ -46,34 +48,32 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
               width: MediaQuery.of(context).size.width * 0.6,
               height: MediaQuery.of(context).size.height * 0.1,
               decoration: BoxDecoration(
-                color: smartGateVM.filteringStatus == Status.loading
-                    ? Colors.white10
-                    : Colors.deepPurple,
+                color: MainColors.getPrimaryColor(),
                 borderRadius: BorderRadius.circular(16),
               ),
               alignment: Alignment.center,
               child: smartGateVM.filteringStatus == Status.loading
-                  ? const Row(
+                  ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Filtering...",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: MainTextStyles.getButtonTextStyle(),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
-                      color: Colors.white,
+                      color: MainColors.getTextPrimaryColor(),
                       strokeWidth: 2,
                     ),
                   ),
                 ],
               )
-                  : const Text(
+                  : Text(
                 "Start Filtering",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: MainTextStyles.getButtonTextStyle(),
               ),
             ),
           );
@@ -108,7 +108,7 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
       Routes.resultScreenRoute,
       arguments: {
         'type': ResultType.frames,
-        'frames': viewModel.topFrames,
+        'frameResult': viewModel.result,
       },
     );
   }

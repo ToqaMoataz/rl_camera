@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -9,22 +8,22 @@ import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Scan%20Mo
 
 import '../../../Core/Costants/constants.dart';
 import '../../Components/frame_card.dart';
-import '../Camera Screen/View/Tabs/Smart Frame Gate/Model/frame_model.dart';
+import '../Camera Screen/View/Tabs/Smart Frame Gate/Model/filter_result_model.dart';
 
 class ResultScreen extends StatelessWidget {
   final ResultType type;
 
-  final List<FrameModel>? frames;
+  final SmartGateResult? frameResult;
   final ScanResultModel? scanResult;
   final dynamic detectionData;
 
   const ResultScreen({
     super.key,
     required this.type,
-    this.frames,
+    this.frameResult,
     this.scanResult,
     this.detectionData,
-  }) : assert(frames != null || scanResult != null || detectionData != null);
+  }) : assert(frameResult != null || scanResult != null || detectionData != null);
 
   @override
   Widget build(BuildContext context) {
@@ -47,30 +46,106 @@ class ResultScreen extends StatelessWidget {
 
   Widget _buildResultBody(context) {
     if (type == ResultType.frames) {
-      return _buildFramesGrid(frames!);
+      return _buildFramesResult(frameResult!,context);
     } else if (type == ResultType.scan) {
       return _buildScanResult(scanResult!, context);
     } else if (type == ResultType.detection) {}
     return SizedBox.shrink();
   }
 
-  Widget _buildFramesGrid(List<FrameModel> frames) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.55,
-      ),
-      itemCount: frames.length,
-      itemBuilder: (context, index) {
-        final item = frames[index];
+  Widget _buildFramesResult(SmartGateResult result, BuildContext context) {
+    final metrics = result.metrics;
 
-        return FrameCard(frame: item);
-      },
+    Widget metricRow(String title, String value) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+          Text(value),
+        ],
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: MainColors.getPrimaryColor(),
+                  width: 2,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Processed Frames: ${metrics.totalFramesProcessed}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  Text(
+                    "Accepted Frames: ${metrics.totalFramesAccepted}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  const Divider(),
+                  Text(
+                    "Avg Sharpness: ${metrics.avgSharpness.toStringAsFixed(2)}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  Text(
+                    "Avg Exposure: ${metrics.avgExposure.toStringAsFixed(2)}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  Text(
+                    "Avg Motion: ${metrics.avgMotion.toStringAsFixed(2)}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  Text(
+                    "Avg Total Score: ${metrics.avgTotalScore.toStringAsFixed(2)}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  const Divider(),
+                  Text(
+                    "Average FPS: ${metrics.avgFps.toStringAsFixed(2)}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                  Text(
+                    "Avg Processing Time (ms): ${metrics.avgProcessingTime.toStringAsFixed(2)}",
+                    style: MainTextStyles.getBasicTextStyle(MainColors.getPrimaryColor()),
+                  ),
+                ],
+              ),
+
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: GridView.builder(
+                padding: const EdgeInsets.all(12),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.55,
+                ),
+                itemCount: result.bestFrames.length,
+                itemBuilder: (context, index) {
+                  final item = result.bestFrames[index];
+                  return FrameCard(frame: item);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
+
 
   Widget _buildScanResult(ScanResultModel scanResult, context) {
     return Padding(
