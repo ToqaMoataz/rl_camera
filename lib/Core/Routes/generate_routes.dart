@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import '../../UI/Screens/Camera Screen/View/Screen/camera_screen.dart';
+import '../../UI/Screens/Initial  Screen/welcome_screen.dart';
 import '../../UI/Screens/Result Screen/result_screen.dart';
 
 import 'app_routes.dart';
@@ -12,6 +13,11 @@ class AppRoutesGenerator {
 
   Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
+
+      case Routes.welcomeScreenRoute:
+        return MaterialPageRoute(
+          builder: (_) => const WelcomeScreen(),
+        );
 
       case Routes.cameraScreenRoute:
         return MaterialPageRoute(
@@ -29,9 +35,9 @@ class AppRoutesGenerator {
           ),
         );
 
-
       default:
         return null;
     }
   }
+
 }

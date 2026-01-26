@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rl_camera_filters/Core/Colors/main_colors.dart';
 import 'package:rl_camera_filters/Core/Text%20Syles/text_styles.dart';
 
+import 'Core/App Theme/app_theme.dart';
 import 'Core/Routes/app_routes.dart';
 import 'Core/Routes/generate_routes.dart';
 import 'UI/Screens/Camera Screen/View Model/camera_screen_view_model.dart';
@@ -33,35 +34,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          centerTitle: true,
-          iconTheme: IconThemeData(
-            color: MainColors.getPrimaryColor()
-          ),
-          backgroundColor:MainColors.getBackGroundColor(),
-          titleTextStyle: MainTextStyles.getTitleTextStyle(),
-        ),
-        scaffoldBackgroundColor: MainColors.getBackGroundColor(),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor:MainColors.getBackGroundColor(),
-          selectedIconTheme: IconThemeData(
-            color: MainColors.getPrimaryColor(),
-          ),
-          unselectedIconTheme: IconThemeData(
-            color: MainColors.getTextPrimaryColor(),
-          ),
-          selectedLabelStyle: TextStyle(
-            color: MainColors.getPrimaryColor(),
-          ),
-          unselectedLabelStyle: TextStyle(
-            color: MainColors.getTextPrimaryColor(),
-          ),
-          unselectedItemColor: MainColors.getTextPrimaryColor(),
-          selectedItemColor: MainColors.getPrimaryColor()
-        )
-      ),
-      initialRoute: Routes.cameraScreenRoute,
+      theme: AppTheme.theme,
+      initialRoute: Routes.welcomeScreenRoute,
       onGenerateRoute:AppRoutesGenerator(cameras: _cameras).generateRoute,
     );
   }
