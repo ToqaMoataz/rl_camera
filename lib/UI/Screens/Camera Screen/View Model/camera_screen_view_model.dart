@@ -1,7 +1,9 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../../../Costants/constants.dart';
+import '../../../../Core/Costants/constants.dart';
+
+
 
 class CameraScreenViewModel extends ChangeNotifier {
   late int selectedTab;

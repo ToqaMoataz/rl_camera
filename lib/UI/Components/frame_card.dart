@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:rl_camera_filters/Core/Colors/main_colors.dart';
+import 'package:rl_camera_filters/Core/Text%20Syles/text_styles.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Smart%20Frame%20Gate/Model/frame_model.dart';
 
 class FrameCard extends StatelessWidget {
   final FrameModel frame;
-  const FrameCard({super.key,required this.frame});
+
+  const FrameCard({super.key, required this.frame});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +15,10 @@ class FrameCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.deepPurple
-        ),
+        border: Border.all(color: MainColors.getPrimaryColor()),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: ClipRRect(
@@ -29,20 +31,26 @@ class FrameCard extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8),
-          Text("Brightness: ${frame.brightnessScore.toStringAsFixed(3)}", style: style()),
-          Text("Sharpness: ${frame.blurScore.toStringAsFixed(3)}", style: style()),
-          Text("Motion: ${frame.shakeScore.toStringAsFixed(3)}", style: style()),
+          Text(
+            "Brightness: ${frame.brightnessScore.toStringAsFixed(3)}",
+            style: MainTextStyles.getBasicTextStyle(
+              MainColors.getPrimaryColor(),
+            ),
+          ),
+          Text(
+            "Sharpness: ${frame.blurScore.toStringAsFixed(3)}",
+            style: MainTextStyles.getBasicTextStyle(
+              MainColors.getPrimaryColor(),
+            ),
+          ),
+          Text(
+            "Motion: ${frame.shakeScore.toStringAsFixed(3)}",
+            style: MainTextStyles.getBasicTextStyle(
+              MainColors.getPrimaryColor(),
+            ),
+          ),
         ],
-      )
-
-
-    );
-  }
-  TextStyle style(){
-    return TextStyle(
-      fontSize: 12,
-      color: Colors.deepPurple,
-      fontWeight: FontWeight.w400,
+      ),
     );
   }
 }

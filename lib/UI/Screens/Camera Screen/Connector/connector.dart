@@ -1,6 +1,8 @@
 
 
 abstract class Connector {
-  showSuccess();
-  showError(String msg);
+  void showSuccess();
+  void showError(String msg);
+  void onLoading();
+  void removeLoading();
 }

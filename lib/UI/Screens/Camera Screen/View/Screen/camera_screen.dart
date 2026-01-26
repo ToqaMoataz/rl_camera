@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View%20Model/camera_screen_view_model.dart';
 
-import '../../../../../Costants/constants.dart';
+import '../../../../../Core/Costants/constants.dart';
 import '../Tabs/On-Device TFLite Detector/View/option_c_tab.dart';
 import '../Tabs/Scan Mode/View/option_b_tab.dart';
 import '../Tabs/Smart Frame Gate/View/option_a_tab.dart';
@@ -92,7 +92,6 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  // ================= CAMERA =================
 
   Widget _buildCamera(CameraScreenViewModel vm) {
     if (vm.cameraStatus == Status.loading) {

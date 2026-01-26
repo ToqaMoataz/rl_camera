@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/Connector/connector.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Smart%20Frame%20Gate/View%20Model/smart_gate_view_model.dart';
-import '../../../../../../../Costants/constants.dart';
-import '../../../../../../../Routes/app_routes.dart';
+
+import '../../../../../../../Core/Costants/constants.dart';
+import '../../../../../../../Core/Routes/app_routes.dart';
 import '../../../../View Model/camera_screen_view_model.dart';
 
 
@@ -82,7 +83,7 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
   }
 
   @override
-  showError(String msg) {
+  void showError(String msg) {
     if (!mounted) return;
     showDialog(
       context: context,
@@ -100,7 +101,7 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
   }
 
   @override
-  showSuccess() {
+  void showSuccess() {
     if (!mounted) return;
     Navigator.pushNamed(
       context,
@@ -110,6 +111,18 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
         'frames': viewModel.topFrames,
       },
     );
+  }
+
+  @override
+  void onLoading() {
+    // No need for it here
+    print("IT's Loading");
+  }
+
+  @override
+  void removeLoading() {
+    // No need for it here
+    print("IT's not Loading");
   }
 }
 

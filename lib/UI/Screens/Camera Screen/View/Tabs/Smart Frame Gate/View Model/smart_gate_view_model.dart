@@ -4,7 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/Connector/connector.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Smart%20Frame%20Gate/Service/frame_Gate_service.dart';
-import '../../../../../../../Costants/constants.dart';
+
+import '../../../../../../../Core/Costants/constants.dart';
 import '../Model/frame_model.dart';
 
 class SmartGateViewModel extends ChangeNotifier{
@@ -13,7 +14,7 @@ class SmartGateViewModel extends ChangeNotifier{
   List<FrameModel> topFrames = [];
   Status filteringStatus=Status.init;
   String? errorMessage;
-   Connector? connector;
+  Connector? connector;
 
   void showMetrics(){
     if(topFrames.isNotEmpty){
