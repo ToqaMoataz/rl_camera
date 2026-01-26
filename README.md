@@ -50,6 +50,6 @@ This project is a smart camera app that provides real-time frame analysis, scann
 - Users can navigate between tabs and use buttons normally to test all features.  
 
 ## Screen Recording
-A 2–4 minute screen recording demonstrating the app’s functionality should be included in the repository or submitted along with the project.  
+A 2 minutes screen recording demonstrating the app’s functionality should be included in the email.  
 
 
