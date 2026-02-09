@@ -16,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
 
             children: [
-              Spacer(flex: 3), // يملأ الجزء العلوي ويدفع النص للوسط
+              Spacer(flex: 3),
               Text(
                 "Welcome to\nSmart Camera",
                 textAlign: TextAlign.start,
