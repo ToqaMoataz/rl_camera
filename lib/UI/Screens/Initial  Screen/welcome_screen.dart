@@ -9,30 +9,27 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
 
-            children: [
-              Spacer(flex: 3),
-              Text(
-                "Welcome to\nSmart Camera",
-                textAlign: TextAlign.start,
-                style: MainTextStyles.getHeadingTextStyle(),
-              ),
-              Spacer(flex: 3),
-              ButtonCard(
-                onTap: () {
-                  Navigator.pushReplacementNamed(context, Routes.cameraScreenRoute);
-                },
-                buttonText: "Start Camera",
-              ),
-            ],
-          ),
-        )
-
+          children: [
+            Spacer(flex: 3),
+            Text(
+              "Welcome to\nSmart Camera",
+              textAlign: TextAlign.start,
+              style: MainTextStyles.getHeadingTextStyle(),
+            ),
+            Spacer(flex: 3),
+            ButtonCard(
+              onTap: () {
+                Navigator.pushReplacementNamed(context, Routes.cameraScreenRoute);
+              },
+              buttonText: "Start Camera",
+            ),
+          ],
+        ),
       ),
     );
   }
