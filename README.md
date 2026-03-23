@@ -1,1 +1,85 @@
-Real-Time Mobile Computer Vision Suite 🚧 (Work in Progress)A high-performance Flutter-based camera pipeline designed for real-time image analysis, on-device object detection, and document enhancement. This project is being developed to demonstrate advanced handling of computer vision tasks on mobile hardware.Status: 🛠️ Active Development.Modules 1 & 3 are fully functional. Module 2 (Object Detection) is currently in the implementation phase.🌟 Core Modules1. Smart Frame Intelligence (Quality Gate) ✅ [Completed]An automated frame-selection engine that evaluates incoming camera data in real-time.Dynamic Scoring: Real-time evaluation of Sharpness (Laplacian variance), Exposure, and Motion metadata.Auto-Capture Logic: Intelligent buffering system that automatically picks the "Best 10 Frames" based on a weighted quality algorithm.2. On-Device Object Detection (Neural Engine) 🏗️ [In Progress]Integration of real-time computer vision using TFLite for object recognition.Custom NMS (Non-Maximum Suppression): Implementing a manual mathematical algorithm for bounding box filtering (IoU-based) to ensure high precision.Unit Testing: Development of a dedicated test suite to verify the NMS logic against toy example tensors.Current Stage: Implementing the image preprocessing pipeline (Letterboxing/Normalization).3. Advanced Scan Mode (Image Enhancement) ✅ [Completed]A dedicated interface for document and object scanning using on-device image processing.Adaptive Thresholding: Converts noisy camera streams into clean, high-contrast results.Live Comparison: Integrated "Before vs. After" toggle to visualize processing improvements.🏗 Architecture & PerformanceThe project follows Clean Architecture to maintain a strict separation between high-frequency camera logic and the UI.State Management: Powered by Cubit / BLoC for reactive updates.Dependency Injection: Managed via Get_it.Local Persistence: Uses Hive for fast caching of session metadata.📊 Performance Benchmarks (Tested on Realme 9i)MetricStatusValueAverage FPSStabilized~4 FPSInference LatencyOptimized~155 msDevice Model-Realme 9i (Snapdragon 680)🛠 Engineering Challenges & Solutions1. Robust Camera Lifecycle ManagementThe Challenge: Preventing hardware resource locks when navigating between complex camera features.The Solution: Implemented a custom lifecycle strategy within the Repository layer to ensure safe disposal and re-initialization of the camera controller.2. Real-Time Performance TuningThe Challenge: Stabilizing the frame rate on mid-range hardware during the camera "warm-up" phase.The Solution: Developed a Warm-up Buffer that ignores initial unstable frames, ensuring that only high-quality data enters the processing pipeline.🚀 Getting StartedClone & Install: git clone [Your-Repo-URL] followed by flutter pub get.Permissions: Ensure Camera permissions are granted on the physical device.Run: For optimal performance, use flutter run --release.📱 Demo & Documentation[(https://drive.google.com/drive/folders/1N3QJmkIwTPtoOmHpaqZHK94hOHf_l7BZ?usp=drive_link)]
+Smart Camera Filter App
+This project is a smart camera app that provides real-time frame analysis, scanning, and detection features.
+
+📺 Demo & Screen Recording
+Video Demo: (https://drive.google.com/drive/folders/1N3QJmkIwTPtoOmHpaqZHK94hOHf_l7BZ?usp=drive_link).
+
+Highlights: A 2-minute demonstration showing Option A (Smart Frame Gate), Option B (Scan Mode), and general UI navigation.
+
+🛠 Features
+✅ Option A: Smart Frame Gate (Quality Filter) - [COMPLETE]
+Builds a camera preview that scores each frame and decides ACCEPT / REJECT based on:
+
+Sharpness: Blur score analysis.
+
+Motion: Shake score detection.
+
+Exposure: Brightness score evaluation.
+
+Goal: Automatically capture the “best” 10 frames within 15 seconds and show live metrics.
+
+✅ Option B: Scan Mode (Stabilized Capture Filter) - [COMPLETE]
+A dedicated "Scan" mode for cleaner image results using simple image processing:
+
+Processing: Includes crop to content, deskew, contrast enhancement, and adaptive thresholding.
+
+Comparison: Includes a Before / After view inside the app.
+
+Note: Use your own test photos (anything you shoot yourself). No private datasets are required.
+
+⏳ Option C: On-Device TFLite Detector - [IN PROGRESS]
+Integration of a public TFLite object detection model on the live camera stream.
+
+Preprocessing: Resizing and letterboxing logic.
+
+Inference: Running model inference directly on-device.
+
+Custom NMS: Implementing Non-Max Suppression manually (not a ready-made package).
+
+Extra Requirement: A small unit test for NMS using a “toy example” output tensor to verify expected final boxes.
+
+📱 General App Features
+Tab Navigation: Easy access to switch between different app functionalities.
+
+Metrics Display: Real-time dashboard showing:
+
+Processed frames vs. Accepted frames.
+
+Average quality scores.
+
+Current FPS.
+
+Processing time per frame.
+
+📱 Device Information & Performance
+Device model: Realme 9i
+
+Average FPS: ~4 FPS
+
+Average inference time per frame: ~155 ms (approximate)
+
+🔧 Biggest Issues Faced & Solutions
+Camera Lifecycle Management: * Problem: The camera would block or stop working if the app was left without properly closing the camera.
+
+Solution: Implemented proper lifecycle management to initialize and dispose of the camera when the app is paused, inactive, or resumed.
+
+Performance Challenges with Frame Processing: * Problem: The first frames were unstable due to camera warm-up, resulting in low FPS and inconsistent results.
+
+Solution: Skipped the initial frames during the warm-up period and processed a fixed number of frames per second to stabilize performance.
+
+Threshold and Metrics Calibration: * Problem: Determining accurate thresholds for metrics like sharpness, exposure, and motion was challenging.
+
+Solution: Iteratively tested multiple values until achieving reasonably accurate results. Calculating metrics for frames was complex but improved with experimentation.
+
+🚀 How to Run
+Clone or Unzip: Clone the repository or unzip the project folder.
+
+IDE: Open the project in Android Studio or VS Code with Flutter support.
+
+Permissions: Ensure your device has camera permission enabled.
+
+Run: Execute flutter run or use your IDE's run button.
+
+Test: Use the on-screen buttons to start filtering or scanning and navigate between tabs to access all features.
+
+⚠️ Important: Allow camera access when prompted; otherwise, the app cannot function correctly.
