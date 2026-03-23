@@ -1,9 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rl_camera_filters/Core/Colors/main_colors.dart';
-import 'package:rl_camera_filters/Core/Text%20Syles/text_styles.dart';
-
 import 'Core/App Theme/app_theme.dart';
 import 'Core/Routes/app_routes.dart';
 import 'Core/Routes/generate_routes.dart';

@@ -56,16 +56,6 @@ class ResultScreen extends StatelessWidget {
   Widget _buildFramesResult(SmartGateResult result, BuildContext context) {
     final metrics = result.metrics;
 
-    Widget metricRow(String title, String value) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-          Text(value),
-        ],
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SingleChildScrollView(
@@ -124,8 +114,10 @@ class ResultScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.7,
               child: GridView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+
                 padding: const EdgeInsets.all(12),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
