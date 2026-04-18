@@ -1,85 +1,93 @@
-Smart Camera Filter App
-This project is a smart camera app that provides real-time frame analysis, scanning, and detection features.
+# Smart Camera Filter App
+
+A smart camera app that provides real-time frame analysis, scanning, and on-device object detection.
 
 📺 Demo & Screen Recording
-Video Demo: (https://drive.google.com/drive/folders/1N3QJmkIwTPtoOmHpaqZHK94hOHf_l7BZ?usp=drive_link).
+Video Demo: https://drive.google.com/drive/folders/1N3QJmkIwTPtoOmHpaqZHK94hOHf_l7BZ?usp=drive_link
 
-Highlights: A 2-minute demonstration showing Option A (Smart Frame Gate), Option B (Scan Mode), and general UI navigation.
+Highlights: A 2-minute demonstration showing Option A (Smart Frame Gate), Option B (Scan Mode), Option C (On-Device TFLite Detector), and general UI navigation.
 
-🛠 Features
-✅ Option A: Smart Frame Gate (Quality Filter) - [COMPLETE]
+---
+
+## ✅ Chosen Options
+
+This project implements **Option A**, **Option B**, and **Option C**.
+
+| Option | Feature | Status |
+|--------|---------|--------|
+| A | Smart Frame Gate (Quality Filter) | ✅ Complete |
+| B | Scan Mode (Stabilized Capture Filter) | ✅ Complete |
+| C | On-Device TFLite Detector | ✅ Complete |
+
+---
+
+## 🛠 Features
+
+### ✅ Option A: Smart Frame Gate (Quality Filter)
 Builds a camera preview that scores each frame and decides ACCEPT / REJECT based on:
 
-Sharpness: Blur score analysis.
+- **Sharpness**: Blur score analysis using Laplacian variance.
+- **Motion**: Shake score detection by comparing consecutive frames.
+- **Exposure**: Brightness score evaluation from the Y channel.
 
-Motion: Shake score detection.
+Goal: Automatically capture the best 10 frames within 15 seconds and display live metrics.
 
-Exposure: Brightness score evaluation.
+---
 
-Goal: Automatically capture the “best” 10 frames within 15 seconds and show live metrics.
+### ✅ Option B: Scan Mode (Stabilized Capture Filter)
+A dedicated Scan mode for cleaner image results using simple image processing:
 
-✅ Option B: Scan Mode (Stabilized Capture Filter) - [COMPLETE]
-A dedicated "Scan" mode for cleaner image results using simple image processing:
+- **Processing**: Crop to content, deskew, contrast enhancement, and adaptive thresholding.
+- **Comparison**: Before / After view inside the app.
 
-Processing: Includes crop to content, deskew, contrast enhancement, and adaptive thresholding.
+> Note: Use your own test photos. No private datasets are required.
 
-Comparison: Includes a Before / After view inside the app.
+---
 
-Note: Use your own test photos (anything you shoot yourself). No private datasets are required.
+### ✅ Option C: On-Device TFLite Detector
+Integration of EfficientDet-Lite0 (public TFLite model) running on the live camera stream:
 
-⏳ Option C: On-Device TFLite Detector - [IN PROGRESS]
-Integration of a public TFLite object detection model on the live camera stream.
+- **Preprocessing**: YUV→RGB conversion, letterbox resize to 300×300, tensor conversion — all offloaded to isolates for smooth performance.
+- **Inference**: Running model inference fully on-device using `tflite_flutter`.
+- **Coordinate Mapping**: Reversing letterbox padding and scaling boxes to screen pixels correctly.
+- **Label Alignment**: COCO labels correctly aligned with model output using index offset (+1 for background class).
+- **Custom NMS**: Non-Max Suppression implemented manually from scratch using IoU — no ready-made packages used.
+- **Unit Test**: NMS verified with a toy example covering: overlapping boxes, non-overlapping boxes, empty input, and identical boxes — all passing ✅
 
-Preprocessing: Resizing and letterboxing logic.
+---
 
-Inference: Running model inference directly on-device.
+### 📱 General App Features
+- Tab Navigation: Easy switching between app functionalities.
+- Metrics Display: Real-time dashboard showing processed vs accepted frames, average quality scores, FPS, and processing time per frame.
 
-Custom NMS: Implementing Non-Max Suppression manually (not a ready-made package).
+---
 
-Extra Requirement: A small unit test for NMS using a “toy example” output tensor to verify expected final boxes.
+## 📱 Device Information & Performance
 
-📱 General App Features
-Tab Navigation: Easy access to switch between different app functionalities.
+| | Option A | Option C |
+|--|---------|---------|
+| Device | Realme 9i | Realme 9i |
+| Average FPS | ~4 FPS | ~4 FPS |
+| Avg inference time | ~155 ms | ~155 ms per frame |
 
-Metrics Display: Real-time dashboard showing:
+---
 
-Processed frames vs. Accepted frames.
+## 🔧 Biggest Issues Faced & Solutions
 
-Average quality scores.
+- **Camera Lifecycle Management**: The camera would block or stop working if the app was left without properly closing it. Fixed by implementing proper lifecycle management to initialize and dispose of the camera when the app is paused, inactive, or resumed.
 
-Current FPS.
+- **Performance Challenges with Frame Processing**: The first frames were unstable due to camera warm-up, resulting in low FPS and inconsistent results. Fixed by skipping the initial warm-up frames, using time-based throttling instead of frame counting, and offloading heavy processing (YUV conversion, resize, tensor conversion) to Dart isolates via `compute()`.
 
-Processing time per frame.
+- **False Object Detections in Option C**: The model was detecting objects that did not exist in the scene (e.g., detecting a spoon when pointing at a mouse). Fixed by correcting the preprocessing pipeline — properly reversing the letterbox padding offset when mapping model output coordinates back to screen space, and aligning COCO label indices correctly with a +1 background class offset.
 
-📱 Device Information & Performance
-Device model: Realme 9i
+---
 
-Average FPS: ~4 FPS
+## 🚀 How to Run
 
-Average inference time per frame: ~155 ms (approximate)
+1. **Clone or Unzip**: Clone the repository or unzip the project folder.
+2. **IDE**: Open the project in Android Studio or VS Code with Flutter support.
+3. **Permissions**: Ensure your device has camera permission enabled.
+4. **Run**: Execute `flutter run` or use your IDE's run button.
+5. **Test NMS**: Run `flutter test test/nms_test.dart` to verify NMS unit tests pass.
 
-🔧 Biggest Issues Faced & Solutions
-Camera Lifecycle Management: * Problem: The camera would block or stop working if the app was left without properly closing the camera.
-
-Solution: Implemented proper lifecycle management to initialize and dispose of the camera when the app is paused, inactive, or resumed.
-
-Performance Challenges with Frame Processing: * Problem: The first frames were unstable due to camera warm-up, resulting in low FPS and inconsistent results.
-
-Solution: Skipped the initial frames during the warm-up period and processed a fixed number of frames per second to stabilize performance.
-
-Threshold and Metrics Calibration: * Problem: Determining accurate thresholds for metrics like sharpness, exposure, and motion was challenging.
-
-Solution: Iteratively tested multiple values until achieving reasonably accurate results. Calculating metrics for frames was complex but improved with experimentation.
-
-🚀 How to Run
-Clone or Unzip: Clone the repository or unzip the project folder.
-
-IDE: Open the project in Android Studio or VS Code with Flutter support.
-
-Permissions: Ensure your device has camera permission enabled.
-
-Run: Execute flutter run or use your IDE's run button.
-
-Test: Use the on-screen buttons to start filtering or scanning and navigate between tabs to access all features.
-
-⚠️ Important: Allow camera access when prompted; otherwise, the app cannot function correctly.
+> ⚠️ **Important**: Allow camera access when prompted; otherwise, the app cannot function correctly.
