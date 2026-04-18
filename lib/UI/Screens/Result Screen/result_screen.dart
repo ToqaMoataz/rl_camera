@@ -15,15 +15,13 @@ class ResultScreen extends StatelessWidget {
 
   final SmartGateResult? frameResult;
   final ScanResultModel? scanResult;
-  final dynamic detectionData;
 
   const ResultScreen({
     super.key,
     required this.type,
     this.frameResult,
     this.scanResult,
-    this.detectionData,
-  }) : assert(frameResult != null || scanResult != null || detectionData != null);
+  }) : assert(frameResult != null || scanResult != null);
 
   @override
   Widget build(BuildContext context) {

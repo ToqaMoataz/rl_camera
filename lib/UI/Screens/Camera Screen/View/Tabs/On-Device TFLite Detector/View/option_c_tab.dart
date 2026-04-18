@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:rl_camera_filters/Core/Costants/constants.dart';
 import '../../../../../../../Core/Colors/main_colors.dart';
 import '../../../../../../../Core/Text Syles/text_styles.dart';
 import '../../../../../../Components/button_card.dart';
-import '../../../../Connector/connector.dart';
 import '../../../../View Model/camera_screen_view_model.dart';
 import '../View Model/detector_view_model.dart';
+import 'detection_drawer.dart';
 
 class TFLiteDetector extends StatefulWidget {
   const TFLiteDetector({super.key});
@@ -15,31 +15,56 @@ class TFLiteDetector extends StatefulWidget {
   State<TFLiteDetector> createState() => _TFLiteDetectorState();
 }
 
-class _TFLiteDetectorState extends State<TFLiteDetector> implements Connector{
+class _TFLiteDetectorState extends State<TFLiteDetector>{
   late DetectorViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
     viewModel = DetectorViewModel();
-    viewModel.connector = this;
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = context.read<CameraScreenViewModel>().controller;
+
     return ChangeNotifierProvider.value(
       value: viewModel,
-      child:ButtonCard(
-        onTap: () async {
-          if (controller != null) {
-            await viewModel.startDetecting(controller);
-          }
-          //showMyDialog(context);
+      child: Consumer<DetectorViewModel>(
+        builder: (context, vm, _) {
+          return Stack(
+            children: [
+              if (vm.finalResult != null)
+                IgnorePointer(
+                  child: CustomPaint(
+                    size: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height),
+                    painter: DetectionDrawer(recognitions: vm.finalResult!),
+                  ),
+                ),
+
+              Align(
+                alignment: const Alignment(0, 0.8),
+                child: ButtonCard(
+                  onTap: () async {
+                    if (controller != null) {
+                      if (vm.detectingStatus == Status.init) {
+                        final screenSize = MediaQuery.of(context).size;
+                        await vm.startDetecting(controller,screenSize);
+                      } else {
+                        vm.stopDetecting(controller);
+                      }
+                    }
+                  },
+                  buttonText: (vm.detectingStatus == Status.init)
+                      ? "Start detecting"
+                      : "Detecting",
+                ),
+              ),
+            ],
+          );
         },
-        buttonText: "Start detecting",
-      )
-    ) ;
+      ),
+    );
   }
 
   void showMyDialog(BuildContext context) {
@@ -62,38 +87,4 @@ class _TFLiteDetectorState extends State<TFLiteDetector> implements Connector{
     );
   }
 
-  @override
-  void showSuccess() {
-    if (!mounted) return;
-    // Navigator.pushNamed(
-    //   context,
-    //   Routes.resultScreenRoute,
-    //   arguments: {'type': ResultType.detection, 'scan': viewModel.result},
-    // );
-  }
-
-  @override
-  void onLoading() {
-    if (!mounted) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: MainColors.getBackGroundColor(),
-      builder: (_) => Center(
-        child: CircularProgressIndicator(color: MainColors.getPrimaryColor()),
-      ),
-    );
-  }
-
-  @override
-  void removeLoading() {
-    if (!mounted) return;
-    Navigator.of(context, rootNavigator: true).pop();
-  }
-
-  @override
-  void showError(String msg) {
-    // TODO: implement showError
-  }
 }

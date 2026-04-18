@@ -36,11 +36,14 @@ class _ScanModeState extends State<ScanMode> implements Connector {
       child: Consumer<ScanViewModel>(
         builder: (context, value, child) {
           if (controller != null) {
-            return ButtonCard(
-              onTap: () async {
-                await viewModel.captureImage(controller);
-              },
-              buttonText: "Scan",
+            return Align(
+              alignment: const Alignment(0, 0.8),
+              child: ButtonCard(
+                onTap: () async {
+                  await viewModel.captureImage(controller);
+                },
+                buttonText: "Scan",
+              ),
             );
           }
           return CircularProgressIndicator(color: MainColors.getPrimaryColor());

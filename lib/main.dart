@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/On-Device%20TFLite%20Detector/View%20Model/detector_view_model.dart';
 import 'Core/App Theme/app_theme.dart';
 import 'Core/Routes/app_routes.dart';
 import 'Core/Routes/generate_routes.dart';
@@ -12,6 +13,8 @@ late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await DetectorViewModel().loadModel();
 
   _cameras = await availableCameras();
   runApp(

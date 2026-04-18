@@ -81,10 +81,7 @@ class _CameraScreenState extends State<CameraScreen>
             body: Stack(
               children: [
                 _buildCamera(vm),
-                Align(
-                  alignment: const Alignment(0, 0.8),
-                  child: _returnTab(vm),
-                ),
+                _returnTab(vm),
               ],
             ),
           );

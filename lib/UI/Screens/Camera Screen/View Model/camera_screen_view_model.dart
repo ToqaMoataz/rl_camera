@@ -15,6 +15,8 @@ class CameraScreenViewModel extends ChangeNotifier {
     selectedTab = 0;
   }
 
+
+
   Future<void> initCamera(List<CameraDescription> cameras) async {
     if (controller != null && controller!.value.isInitialized) {
       return;
@@ -54,20 +56,15 @@ class CameraScreenViewModel extends ChangeNotifier {
     controller?.dispose();
     super.dispose();
   }
-  void changeTab({required int index}) {
+  Future<void> changeTab({required int index}) async {
     selectedTab = index;
+    if(controller!=null){
+      if (controller!.value.isStreamingImages) {
+        await controller?.stopImageStream();
+      }
+    }
+
     notifyListeners();
   }
 
-  void call(){
-    if(selectedTab==0){
-      // Call Filtering frames Function
-      return;
-    }
-    else if(selectedTab==1){
-      // Call Scan Function
-      return;
-    }
-    // Call Detector Function
-  }
 }

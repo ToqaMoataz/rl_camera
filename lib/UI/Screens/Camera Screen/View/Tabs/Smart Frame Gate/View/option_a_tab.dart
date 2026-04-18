@@ -36,44 +36,47 @@ class _SmartFrameGateState extends State<SmartFrameGate> implements Connector {
       value: viewModel,
       child: Consumer<SmartGateViewModel>(
         builder: (context, smartGateVM, child) {
-          return GestureDetector(
-            onTap: smartGateVM.filteringStatus == Status.loading
-                ? null
-                : () {
-              if (cameraVM.controller != null) {
-                smartGateVM.startFiltering(cameraVM.controller!);
-              }
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.6,
-              height: MediaQuery.of(context).size.height * 0.1,
-              decoration: BoxDecoration(
-                color: MainColors.getPrimaryColor(),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              alignment: Alignment.center,
-              child: smartGateVM.filteringStatus == Status.loading
-                  ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Filtering...",
-                    style: MainTextStyles.getButtonTextStyle(),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: MainColors.getTextPrimaryColor(),
-                      strokeWidth: 2,
+          return Align(
+              alignment: const Alignment(0, 0.8),
+            child: GestureDetector(
+              onTap: smartGateVM.filteringStatus == Status.loading
+                  ? null
+                  : () {
+                if (cameraVM.controller != null) {
+                  smartGateVM.startFiltering(cameraVM.controller!);
+                }
+              },
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.6,
+                height: MediaQuery.of(context).size.height * 0.1,
+                decoration: BoxDecoration(
+                  color: MainColors.getPrimaryColor(),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                alignment: Alignment.center,
+                child: smartGateVM.filteringStatus == Status.loading
+                    ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Filtering...",
+                      style: MainTextStyles.getButtonTextStyle(),
                     ),
-                  ),
-                ],
-              )
-                  : Text(
-                "Start Filtering",
-                style: MainTextStyles.getButtonTextStyle(),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: MainColors.getTextPrimaryColor(),
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ],
+                )
+                    : Text(
+                  "Start Filtering",
+                  style: MainTextStyles.getButtonTextStyle(),
+                ),
               ),
             ),
           );

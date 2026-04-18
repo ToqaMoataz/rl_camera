@@ -1,11 +1,65 @@
-import 'dart:typed_data';
 import 'package:camera/camera.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/Connector/connector.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Smart%20Frame%20Gate/Model/filter_result_model.dart';
 import 'package:rl_camera_filters/UI/Screens/Camera%20Screen/View/Tabs/Smart%20Frame%20Gate/Service/frame_Gate_service.dart';
 import '../../../../../../../Core/Costants/constants.dart';
 import '../Model/frame_model.dart';
+
+typedef FramePair = (CameraImage curr, CameraImage? prev);
+
+
+class _FrameResult {
+  final Uint8List img;
+  final double totalScore;
+  final double sharpness;
+  final double exposure;
+  final double motion;
+  final int processingTimeMs;
+
+  _FrameResult({
+    required this.img,
+    required this.totalScore,
+    required this.sharpness,
+    required this.exposure,
+    required this.motion,
+    required this.processingTimeMs,
+  });
+}
+
+
+Future<_FrameResult?> _processingFrame(FramePair frames) async {
+  final currFrame = frames.$1;
+  final prevFrame = frames.$2;
+
+  final start = DateTime.now();
+
+  double sharpness = FrameGateFunctions.calculateSharpnessNormalized(currFrame);
+  double exposure  = FrameGateFunctions.calculateExposureNormalized(currFrame);
+  double motion    = FrameGateFunctions.calculateMotionNormalized(currFrame, prevFrame);
+
+  bool accepted = FrameGateFunctions.returnAccepted(
+    sharpness: sharpness,
+    exposure: exposure,
+    motion: motion,
+  );
+
+  final processingTimeMs = DateTime.now().difference(start).inMilliseconds;
+
+  if (!accepted) return null;
+
+  double totalScore = FrameGateFunctions.calculateTotalScore(exposure, sharpness, motion);
+  Uint8List img     = FrameGateFunctions.convertYUV420ToJpg(currFrame);
+
+  return _FrameResult(
+    img: img,
+    totalScore: totalScore,
+    sharpness: sharpness,
+    exposure: exposure,
+    motion: motion,
+    processingTimeMs: processingTimeMs,
+  );
+}
 
 class SmartGateViewModel extends ChangeNotifier {
   SmartGateViewModel();
@@ -19,26 +73,15 @@ class SmartGateViewModel extends ChangeNotifier {
   int _processedFramesCount = 0;
   int _totalProcessingTimeMs = 0;
 
-  void showMetrics() {
-    if (topFrames.isNotEmpty) {
-      for (int i = 0; i < topFrames.length; i++) {
-        print("Frame Score: ${topFrames[i].score}");
-        print("Frame Motion: ${topFrames[i].shakeScore}");
-        print("Frame Brightness: ${topFrames[i].brightnessScore}");
-        print("Frame Sharpness: ${topFrames[i].blurScore}");
-      }
-    }
-    print("Length: ${topFrames.length}");
-  }
-
   Future<void> startFiltering(CameraController controller) async {
     bool isStreaming = true;
     _processedFramesCount = 0;
     _totalProcessingTimeMs = 0;
     topFrames.clear();
-    DateTime start = DateTime.now();
+
+    DateTime start             = DateTime.now();
     DateTime lastProcessedTime = DateTime.now();
-    DateTime secondTimer = DateTime.now();
+    DateTime secondTimer       = DateTime.now();
     CameraImage? previous;
     const int processingIntervalMs = 250;
 
@@ -46,7 +89,7 @@ class SmartGateViewModel extends ChangeNotifier {
       filteringStatus = Status.loading;
       notifyListeners();
 
-      controller.startImageStream((image) {
+      controller.startImageStream((image) async {
         final now = DateTime.now();
 
         if (!isStreaming) return;
@@ -60,7 +103,23 @@ class SmartGateViewModel extends ChangeNotifier {
 
         if (now.difference(start).inSeconds <= 16) {
           lastProcessedTime = now;
-          _processingFrame(image, previous);
+
+          final frameResult = await compute(_processingFrame, (image, previous));
+
+          _processedFramesCount++;
+
+          if (frameResult != null) {
+            _totalProcessingTimeMs += frameResult.processingTimeMs;
+
+            _manageBestFrames(FrameModel(
+              frame: frameResult.img,
+              score: frameResult.totalScore,
+              isAccepted: true,
+              blurScore: frameResult.sharpness,
+              brightnessScore: frameResult.exposure,
+              shakeScore: frameResult.motion,
+            ));
+          }
 
           previous = image;
         } else {
@@ -72,37 +131,6 @@ class SmartGateViewModel extends ChangeNotifier {
       filteringStatus = Status.error;
       connector?.showError(e.toString());
       notifyListeners();
-    }
-  }
-
-  void _processingFrame(CameraImage currFrame, CameraImage? prevFrame) {
-    DateTime start=DateTime.now();
-    double sharpness = FrameGateFunctions.calculateSharpnessNormalized(currFrame);
-    double exposure = FrameGateFunctions.calculateExposureNormalized(currFrame);
-    double motion = FrameGateFunctions.calculateMotionNormalized(currFrame, prevFrame);
-
-    bool accepted = FrameGateFunctions.returnAccepted(
-      sharpness: sharpness,
-      exposure: exposure,
-      motion: motion,
-    );
-
-    double totalScore = FrameGateFunctions.calculateTotalScore(exposure, sharpness, motion);
-    Uint8List img = FrameGateFunctions.convertYUV420ToJpg(currFrame);
-    DateTime end=DateTime.now();
-    _processedFramesCount+=1;
-    _totalProcessingTimeMs+=end.difference(start).inMilliseconds;
-
-    if (accepted) {
-      FrameModel frame = FrameModel(
-        frame: img,
-        score: totalScore,
-        isAccepted: accepted,
-        blurScore: sharpness,
-        brightnessScore: exposure,
-        shakeScore: motion,
-      );
-      _manageBestFrames(frame);
     }
   }
 
@@ -121,34 +149,45 @@ class SmartGateViewModel extends ChangeNotifier {
     filteringStatus = Status.success;
     notifyListeners();
 
-    int totalFramesAccepted = topFrames.length;
-    if(topFrames.isNotEmpty){
+    if (topFrames.isNotEmpty) {
+      final totalFramesAccepted = topFrames.length;
 
-      double avgSharpness =topFrames.map((f) => f.blurScore).reduce((a, b) => a + b) / topFrames.length;
+      final avgSharpness = topFrames
+          .map((f) => f.blurScore)
+          .reduce((a, b) => a + b) / topFrames.length;
 
-      double avgExposure =topFrames.map((f) => f.brightnessScore).reduce((a, b) => a + b) / topFrames.length;
+      final avgExposure = topFrames
+          .map((f) => f.brightnessScore)
+          .reduce((a, b) => a + b) / topFrames.length;
 
-      double avgMotion =topFrames.map((f) => f.shakeScore).reduce((a, b) => a + b) / topFrames.length;
+      final avgMotion = topFrames
+          .map((f) => f.shakeScore)
+          .reduce((a, b) => a + b) / topFrames.length;
 
-      double avgTotalScore =topFrames.map((f) => f.score).reduce((a, b) => a + b) / topFrames.length;
+      final avgTotalScore = topFrames
+          .map((f) => f.score)
+          .reduce((a, b) => a + b) / topFrames.length;
 
-      double avgFps = _processedFramesCount / 15.0;
-      double avgProcessingTime=_totalProcessingTimeMs/_processedFramesCount;
+      final double avgFps            = _processedFramesCount / 15.0;
+      final double avgProcessingTime = _processedFramesCount > 0
+          ? _totalProcessingTimeMs / _processedFramesCount
+          : 0;
+
       result = SmartGateResult(
-        metrics:SmartGateMetrics(
+        metrics: SmartGateMetrics(
           totalFramesProcessed: _processedFramesCount,
-          totalFramesAccepted: totalFramesAccepted,
-          avgSharpness: avgSharpness,
-          avgExposure: avgExposure,
-          avgMotion: avgMotion,
-          avgTotalScore: avgTotalScore,
-          avgFps: avgFps, avgProcessingTime: avgProcessingTime,
+          totalFramesAccepted:  totalFramesAccepted,
+          avgSharpness:         avgSharpness,
+          avgExposure:          avgExposure,
+          avgMotion:            avgMotion,
+          avgTotalScore:        avgTotalScore,
+          avgFps:               avgFps,
+          avgProcessingTime:    avgProcessingTime,
         ),
-
         bestFrames: List.from(topFrames),
       );
     }
-    connector?.showSuccess();
 
+    connector?.showSuccess();
   }
 }

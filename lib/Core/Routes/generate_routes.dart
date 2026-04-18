@@ -31,7 +31,6 @@ class AppRoutesGenerator {
             type: args['type'],
             frameResult: args['frameResult'],
             scanResult: args['scan'],
-            detectionData: args['detectionData'],
           ),
         );
 

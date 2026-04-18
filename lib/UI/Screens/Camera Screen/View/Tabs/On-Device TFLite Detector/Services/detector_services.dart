@@ -1,10 +1,19 @@
 import 'dart:math';
 
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:image/image.dart' as img;
 import 'package:camera/camera.dart';
 
+import '../Model/detector_result_model.dart';
+import '../Model/resize_result.dart';
+
 class DetectorServices {
+  // PreProcessing
+  static ResizeResult resizeImageIsolate((int, img.Image) args) {
+    return resizeImage(args.$1, args.$2);
+  }
+
   static img.Image convertCameraImage(CameraImage frame) {
     final int width = frame.width;
     final int height = frame.height;
@@ -38,25 +47,33 @@ class DetectorServices {
     return img.copyRotate(destImage, angle: 90);
   }
 
-  static img.Image resizeImage(int targetSize, img.Image src){
-    int srcWidth=src.width;
-    int srcHeight=src.height;
+  static ResizeResult resizeImage(int targetSize, img.Image src) {
+    int srcWidth  = src.width;
+    int srcHeight = src.height;
 
     double ratio = min(targetSize / srcWidth, targetSize / srcHeight);
 
-    int newWidth=(ratio * srcWidth).round();
-    int newHeight=(ratio * srcHeight).round();
+    int newWidth  = (ratio * srcWidth).round();
+    int newHeight = (ratio * srcHeight).round();
 
-    img.Image resizedImage=img.copyResize(src, width: newWidth, height: newHeight);
+    img.Image resizedImage = img.copyResize(src, width: newWidth, height: newHeight);
 
     img.Image canvas = img.Image(width: targetSize, height: targetSize);
     img.fill(canvas, color: img.ColorRgb8(0, 0, 0));
 
-    int xOff = (targetSize - newWidth) ~/ 2;
+    int xOff = (targetSize - newWidth)  ~/ 2;
     int yOff = (targetSize - newHeight) ~/ 2;
 
-    return img.compositeImage(canvas, resizedImage, dstX: xOff, dstY: yOff);
+    img.Image finalImage = img.compositeImage(canvas, resizedImage, dstX: xOff, dstY: yOff);
 
+    return ResizeResult(        // ✅ return everything
+      image: finalImage,
+      ratio: ratio,
+      xOff: xOff,
+      yOff: yOff,
+      newWidth: newWidth,
+      newHeight: newHeight,
+    );
   }
 
   static Uint8List convertToUint8Tensor(img.Image letterboxedImage) {
@@ -67,10 +84,32 @@ class DetectorServices {
       for (int x = 0; x < 300; x++) {
         var pixel = letterboxedImage.getPixel(x, y);
         buffer[pixelIndex++] = pixel.r.toInt();
-        buffer[pixelIndex++] = pixel.r.toInt();
-        buffer[pixelIndex++] = pixel.r.toInt();
+        buffer[pixelIndex++] = pixel.g.toInt();
+        buffer[pixelIndex++] = pixel.b.toInt();
       }
     }
     return buffer;
+  }
+
+  // PostProcessing
+
+  static List<Recognition> applyNMS(List<Recognition> detections,double ratio){
+    detections.sort((a, b) => b.score.compareTo(a.score));
+    List<Recognition> box=[];
+    while(detections.isNotEmpty){
+      final bestScore = detections.removeAt(0);
+      box.add(bestScore);
+     detections.removeWhere((location)=> _iou(bestScore.location, location.location) > ratio);
+
+    }
+    return box;
+  }
+
+ static double _iou(Rect a, Rect b) {
+    final intersection = a.intersect(b);
+    if (intersection.isEmpty) return 0.0;
+    final interArea = intersection.width * intersection.height;
+    final unionArea = (a.width * a.height) + (b.width * b.height) - interArea;
+    return unionArea <= 0 ? 0.0 : interArea / unionArea;
   }
 }
