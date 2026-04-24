@@ -97,4 +97,12 @@ Integration of EfficientDet-Lite0 (public TFLite model) running on the live came
 ## Screenshots
 
 <img width="1080" height="2412" alt="1" src="https://github.com/user-attachments/assets/e5c0c8b4-f7ea-4e82-99eb-cabfc9947df3" />
+<img width="716" height="1600" alt="5" src="https://github.com/user-attachments/assets/927f5599-f007-4dd5-afd7-87f573789b27" />
+<img width="716" height="1600" alt="4" src="https://github.com/user-attachments/assets/568d83ce-e7df-4669-9892-575c948c182b" />
+<img width="716" height="1600" alt="3" src="https://github.com/user-attachments/assets/9b31ccd3-3f5d-464f-b289-750524f11f01" />
+<img width="716" height="1600" alt="2" src="https://github.com/user-attachments/assets/8dc807f7-9e20-466c-8549-0b655feb07ab" />
+<img width="716" height="1600" alt="9" src="https://github.com/user-attachments/assets/10508bcc-1f29-4850-84cb-f854ef8b1fef" />
+<img width="716" height="1600" alt="8" src="https://github.com/user-attachments/assets/8a2c3b4e-f58a-4798-b89a-b3cf91ca9849" />
+<img width="716" height="1600" alt="7" src="https://github.com/user-attachments/assets/17c7416e-a1eb-42a1-b897-e98c32b30341" />
+<img width="716" height="1600" alt="6" src="https://github.com/user-attachments/assets/0da3626b-0522-4448-893f-c208b2d06821" />
 
