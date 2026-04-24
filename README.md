@@ -96,12 +96,12 @@ Integration of EfficientDet-Lite0 (public TFLite model) running on the live came
 
 ## Screenshots
 
-![Intial Screen](screenshots/1.png)
-![Filtiring tab one](screenshots/2.png)
-![Filtiring tab two](screenshots/3.png)
-![Filtiring result](screenshots/4.png)
-![Scan tab one](screenshots/5.png)
-![Scan tab two](screenshots/6.png)
-![Scan result](screenshots/7.png)
-![Detecting tab one](screenshots/8.png)
-![Detecting tab two](screenshots/9.png)
+![Intial Screen](screenshots/1.jpeg)
+![Filtiring tab one](screenshots/2.jpeg)
+![Filtiring tab two](screenshots/3.jpeg)
+![Filtiring result](screenshots/4.jpeg)
+![Scan tab one](screenshots/5.jpeg)
+![Scan tab two](screenshots/6.jpeg)
+![Scan result](screenshots/7.jpeg)
+![Detecting tab one](screenshots/8.jpeg)
+![Detecting tab two](screenshots/9.jpeg)
