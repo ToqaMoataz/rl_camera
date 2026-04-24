@@ -91,3 +91,17 @@ Integration of EfficientDet-Lite0 (public TFLite model) running on the live came
 5. **Test NMS**: Run `flutter test test/nms_test.dart` to verify NMS unit tests pass.
 
 > ⚠️ **Important**: Allow camera access when prompted; otherwise, the app cannot function correctly.
+
+---
+
+## Screenshots
+
+![Intial Screen](screenshots/1.png)
+![Filtiring tab one](screenshots/2.png)
+![Filtiring tab two](screenshots/3.png)
+![Filtiring result](screenshots/4.png)
+![Scan tab one](screenshots/5.png)
+![Scan tab two](screenshots/6.png)
+![Scan result](screenshots/7.png)
+![Detecting tab one](screenshots/8.png)
+![Detecting tab two](screenshots/9.png)
